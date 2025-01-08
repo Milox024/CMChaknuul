@@ -2,14 +2,26 @@ import { call, put, takeLatest } from 'redux-saga/effects'
 import {
     REQUEST_HOME_MODULE_INFO, 
     RESPONSE_HOME_MODULE_INFO, 
-    DATA_FETCH_FAILED
+    DATA_FETCH_FAILED,
+    RESPONSE_USER_LOGIN,
+    REQUEST_USER_LOGIN
 
 } from '../../Constants'
 import HomeModule from '../../../../Libraries/Home'
 
-function* requestHomeModuleInfo(){
+function* requestUserLogin(data){
     try {
-        const response = yield call(HomeModule.GetHomeModule);
+        const response = yield call(HomeModule.RequestUserLogin, data.payload.user);
+        yield put({type: RESPONSE_USER_LOGIN, payload: { response:response }});
+
+    } catch (error) {
+        console.error("service module error", error);
+        yield put({ type: DATA_FETCH_FAILED, message: error.statusText })
+    }
+}
+function* requestHomeModuleInfo(data){
+    try {
+        const response = yield call(HomeModule.GetHomeModule, data.payload.guid);
         yield put({type: RESPONSE_HOME_MODULE_INFO, payload: { response:response }});
 
     } catch (error) {
@@ -18,6 +30,9 @@ function* requestHomeModuleInfo(){
     }
 }
 
+export function* watchRequestUserLogin() {
+    yield takeLatest(REQUEST_USER_LOGIN, requestUserLogin);
+}
 export function* watchRequestHomeModuleInfo() {
     yield takeLatest(REQUEST_HOME_MODULE_INFO, requestHomeModuleInfo);
 }

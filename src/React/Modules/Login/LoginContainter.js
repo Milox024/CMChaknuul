@@ -41,7 +41,6 @@ const LoginContainer = () => {
             {
                 if(login?.usuario?.usuario.ok == true)
                     {
-                        console.log("usuario logeado :D")
                         navigate("/");
                     }
                 else
@@ -62,7 +61,6 @@ const LoginContainer = () => {
     },[user])
 
     const handleLogin = async () => {
-        console.log("user a validar", user)
         if(user.usuario === "" || user.tmp === "")
             {
                 setErrorMsg("Se requiere usuario y contraseña")

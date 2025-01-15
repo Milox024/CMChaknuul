@@ -1,5 +1,6 @@
 import {
     RESPONSE_HOME_MODULE_INFO,
+    RESPONSE_SAVE_OR_UPDATE_EVENT,
     RESPONSE_USER_LOGIN,
 } from '../../Constants'
 
@@ -29,8 +30,17 @@ export default function home(state = {}, action) {
                 else {
                     return { ...state, errorLoadHomeModule: true }
                 }
-
-
+            }
+        case RESPONSE_SAVE_OR_UPDATE_EVENT:
+            {
+                const responseService = action.payload.response;
+                if (responseService.code === 200) {
+                    const service = responseService
+                    return { ...state, errorEventResponse: false, service }
+                }
+                else {
+                    return { ...state, errorEventResponse: true }
+                }
             }
         default:
             return { ...state }

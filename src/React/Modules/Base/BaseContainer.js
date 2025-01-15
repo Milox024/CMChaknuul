@@ -17,13 +17,11 @@ const BaseContainer = (props) => {
       if(login?.usuario)
         {
           if(login?.usuario.usuario?.ok === true){
-            console.log("Usuario Logged");
             setUsuarioLogged(login?.usuario.usuario?.result)
           }
         }
       else
         {
-          console.log("no se encuentra state usuario");
           navigate("/login");
         }
     },[])

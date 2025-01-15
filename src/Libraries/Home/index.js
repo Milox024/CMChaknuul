@@ -20,7 +20,6 @@ class HomeModule {
             response.usuario = usuario;
           }
       );
-      console.log(response)
       return response;
     }
     static async GetHomeModule(guid) {
@@ -38,7 +37,23 @@ class HomeModule {
             response.eventos = usuario;
           }
       );
-      console.log(response)
+      return response;
+    }
+    static async RequestSaveOrUpdateEvent(guid) {
+      var response = 
+      {
+        code: 200
+      };
+      await fetch(URLServices + "CM/AddOrUpdateEvent",{
+        method: "POST",
+        body: JSON.stringify(guid),
+        headers: {"Content-type": "application/json;charset=UTF-8"}
+      })
+        .then((response) => response.json())  
+          .then((usuario) => {
+            response.eventos = usuario;
+          }
+      );
       return response;
     }
   }

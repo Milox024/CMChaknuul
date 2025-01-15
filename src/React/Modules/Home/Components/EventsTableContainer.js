@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { requestHomeModuleInfo } from "../../../ReduxSaga/Actions/Home";
 
 
-const EventsTableContainer = () => {
+const EventsTableContainer = ({setVentana}) => {
 
     
     const dispatch = useDispatch();
@@ -26,14 +26,12 @@ const EventsTableContainer = () => {
         if(login?.usuario)
         {
             if(login?.usuario.usuario?.ok === true){
-            console.log("Usuario Logged");
             setUsuarioLogged(login?.usuario.usuario?.result)
             setRequest({...request, referencia: login?.usuario.usuario?.result.guidActivo})
             }
         }
         else
         {
-            console.log("no se encuentra state usuario");
             navigate("/login");
         }
     },[])
@@ -41,9 +39,7 @@ const EventsTableContainer = () => {
     useEffect(() => {
         if(appReducers.home?.eventosCM?.eventos){
             setEventos(appReducers.home?.eventosCM?.eventos.result)
-            console.log("tonotos", appReducers.home?.eventosCM?.eventos.result)
         }
-        console.log("Ya cayeron los eventos");
     },[appReducers.home?.eventosCM])
 
     useEffect(() => {
@@ -52,13 +48,17 @@ const EventsTableContainer = () => {
       }
     },[request])
 
+    const handleNuevoEvento = () => {
+        setVentana("nuevo")
+    }
+
     return (
         <div>
             <div className="row">
                 <div className="col-8">
                 </div>
                 <div className="col-4">
-                    <button className="form-control mb-2">Nuevo Evento</button>
+                    <button onClick={() => handleNuevoEvento()} className="form-control mb-2">Nuevo Evento</button>
                 </div>
             </div>
             <div className="row">

@@ -1,11 +1,16 @@
 import { Fragment, useEffect, useState } from "react"
-import { requestSaveOrUpdateEvent } from "../../../ReduxSaga/Actions/Home"
-import { useDispatch } from "react-redux"
+import { requestSaveOrUpdateEvent, requestClearSaveOrUpdateEvent, requestHomeModuleInfo } from "../../../ReduxSaga/Actions/Home"
+import { useDispatch, useSelector } from "react-redux"
+import Swal from "sweetalert2";
+import withReactContent from 'sweetalert2-react-content'
 
 
-const NewContainer = ({ guid }) => {
+const NewContainer = ({ guid, setVentana }) => {
 
     const dispatch = useDispatch();
+    const MySwal = withReactContent(Swal)
+    const appReducers = {};
+    appReducers.home = useSelector((state) => state.home);
 
     const [fechaEvento, setFechaEvento] = useState(new Date())
     const [evento, setEvento] = useState({
@@ -25,30 +30,38 @@ const NewContainer = ({ guid }) => {
         Fecha: "",
         FechaCreacion: (new Date().toISOString()),
         FechaEdicion: (new Date().toISOString()),
-        Foco: false
+        Foco: false,
+        Activo: false
     })
     const [msgValidation, setMsgValidation] = useState("Error")
     const [imgSend, setImgSend] = useState("");
     const [dateEvent, setDateEvent] = useState("1900-01-01 00:00")
     const [timeEvent, setTimeEvent] = useState("00:00")
     const [eventoValido, setEventoValido] = useState(0);
+    const [sinFecha, setSinFecha] = useState(false);
+
 
     useEffect(() => {
-        console.log("Evento", evento);
+        document.getElementById("horaEventoId").disabled = sinFecha;
+        document.getElementById("fechaEventoId").disabled = sinFecha;
+        if(sinFecha)
+            {
+                document.getElementById("horaEventoId").value = "";
+                document.getElementById("fechaEventoId").value = "";
+            }
+    },[sinFecha])
+
+    useEffect(() => {
         if(eventoValido === 1){
-            console.log("Evento Valido y Listo");
         }
         setMsgValidation("");
     },[evento])
 
     useEffect(() => {
-        //console.log("Evento Valido", eventoValido)
         if(eventoValido === 1)
             {
-                //console.log("Validadndo fecha de evento", Date.parse(evento.Fecha))
                 if((Date.parse(evento.Fecha)) < (Date.now()))
                     {
-                        //console.log("Validadndo fecha en curso", Date.now())
                         setMsgValidation("La fecha no puede ser menor a la actual");
                         return;
                     }
@@ -58,11 +71,38 @@ const NewContainer = ({ guid }) => {
                             referencia: guid,
                             data: evento
                         }
-                        console.log("Request ", request);
                         dispatch(requestSaveOrUpdateEvent(request))
                     }
             }
     },[evento.Fecha, eventoValido])
+
+    // USE EFFECT DE STATE
+
+    useEffect(() => {
+        if(appReducers?.home?.AddOrUpdateEvent?.eventos?.ok)
+        {
+            dispatch(requestClearSaveOrUpdateEvent());
+            let timerInterval;
+            Swal.fire({
+                title: "Se guardo correctamente!",
+                icon: "success",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: () => {},
+                willClose: () => {
+                    clearInterval(timerInterval);
+                }
+                }).then((result) => {
+                /* Read more about handling dismissals below */
+                if (result.dismiss === Swal.DismissReason.timer) {
+                }
+            });
+            setVentana("main");
+        }
+    },[appReducers?.home?.AddOrUpdateEvent])
+
+    // USE EFFECT DE STATE
 
     const handleValidateEvent = () => {
         if(evento.Tipo === 0)
@@ -85,15 +125,18 @@ const NewContainer = ({ guid }) => {
                 setMsgValidation("El campo Imagen es obligatorio");
                 return;
             }
-        if(dateEvent.includes("1900"))
+        if(!sinFecha)
             {
-                setMsgValidation("Capture el campo Fecha");
-                return;
-            }
-        if(timeEvent.includes("00:00"))
-            {
-                setMsgValidation("Capture el campo Hora");
-                return;
+                if(dateEvent.includes("1900"))
+                    {
+                        setMsgValidation("Capture el campo Fecha");
+                        return;
+                    }
+                if(timeEvent.includes("00:00"))
+                    {
+                        setMsgValidation("Capture el campo Hora");
+                        return;
+                    }
             }
         if(evento.Lugar === "")
             {
@@ -110,10 +153,15 @@ const NewContainer = ({ guid }) => {
                 setMsgValidation("El campo Llamada es obligatorio");
                 return;
             }
-
-        setEvento({...evento, Fecha: dateEvent + "T" + timeEvent});
+        if(!sinFecha)
+            {
+                setEvento({...evento, Fecha: dateEvent + "T" + timeEvent});
+            }
+            else
+            {
+                setEvento({...evento, Fecha: "2999-01-01T00:00"})
+            }
         setEventoValido(1);
-        console.log("Evento Validado :D")
     }
 
 
@@ -129,7 +177,6 @@ const NewContainer = ({ guid }) => {
         reader.readAsDataURL(files[0]);
         reader.onload = (e) => {
             setImgSend(e.target.result)
-            console.log("e.target.result", e.target.result)
             setEvento({...evento, Imagen: e.target.result})
         }
     }
@@ -174,19 +221,30 @@ const NewContainer = ({ guid }) => {
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-2">
+                    <div className="col-4">
                         <div className="form-group">
                             <label >Fecha</label>
-                            <input onChange={(e) => {setDateEvent(e.target.value)}} type="date" className="form-control"/>
+                            <input id="fechaEventoId" onChange={(e) => {setDateEvent(e.target.value)}} type="date" className="form-control"/>
                         </div>
                     </div>
-                    <div className="col-2">
+                    <div className="col-4">
                         <div className="form-group">
                             <label >Hora</label>
-                            <input onChange={(e) => {setTimeEvent(e.target.value)}} type="time" min="09:00" max="18:00" className="form-control"/>
+                            <input id="horaEventoId" onChange={(e) => {setTimeEvent(e.target.value)}} type="time" className="form-control"/>
                         </div>
                     </div>
-                    <div className="col-8">
+                    <div className="col-4">
+                        <div className="form-group">
+                            <br></br>
+                            <div className="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+                                <input onChange={(e)=>{ setSinFecha(e.target.checked) }} type="checkbox" className="btn-check" id="btncheck1" />
+                                <label className="btn btn-outline-danger" htmlFor="btncheck1">Sin Fecha</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-12">
                         <div className="form-group">
                             <label >Lugar</label>
                             <input onChange={(e) => setEvento({...evento, Lugar: e.target.value})} type="text" className="form-control" placeholder="Zona del evento"/>

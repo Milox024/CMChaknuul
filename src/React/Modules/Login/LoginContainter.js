@@ -4,7 +4,7 @@ import { requestUserLogin } from "../../ReduxSaga/Actions/Home"
 import { useDispatch, useSelector } from "react-redux"
 import Swal from "sweetalert2"
 import { useNavigate } from "react-router-dom"
-import bcrypt from "bcryptjs";
+import Cookies from "universal-cookie"
 
 
 
@@ -12,6 +12,7 @@ const LoginContainer = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const cookies = new Cookies();
 
     const appReducers = {};
     appReducers.home = useSelector((state) => state.home);
@@ -27,11 +28,6 @@ const LoginContainer = () => {
 
     useEffect(() => {
         //Autologin para pruebas
-        
-        dispatch(requestUserLogin({
-            "usuario":"cjimenez",
-            "password":"0d7c831db047345a5e3ae9f1ff4d3399142a01c6b287ff684a4227b631783ea5"
-        }));
     },[])
 
 
@@ -41,6 +37,12 @@ const LoginContainer = () => {
             {
                 if(login?.usuario?.usuario.ok == true)
                     {
+                        var fecha = new Date();
+                        fecha.setHours(fecha.getHours() + 1);
+                        console.log("fecha", getFechaFormateada(fecha));
+                        cookies.set("ChaknuulCmUserCookiesUser", login?.usuario.usuario?.result);
+                        cookies.set("ChaknuulCmUserCookiesReference", login?.usuario.usuario?.result?.guidActivo);
+                        cookies.set('ChaknuulCmUserCookiesVigency', getFechaFormateada(fecha));
                         navigate("/");
                     }
                 else
@@ -78,6 +80,11 @@ const LoginContainer = () => {
 
         setUserService({ ...userService, usuario: user.usuario, password: hash })
     }
+
+    const getFechaFormateada = (fecha) => {
+        var date = new Date(fecha);
+        return date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2) + "T" + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) ;
+    }   
 
     return (
         <div className="loginBackground">

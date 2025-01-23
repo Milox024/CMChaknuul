@@ -1,6 +1,7 @@
 import {
     RESPONSE_HOME_MODULE_INFO,
     RESPONSE_SAVE_OR_UPDATE_EVENT,
+    RESPONSE_UPDATE_STATUS_EVENT,
     RESPONSE_USER_LOGIN,
 } from '../../Constants'
 
@@ -35,8 +36,19 @@ export default function home(state = {}, action) {
             {
                 const responseService = action.payload.response;
                 if (responseService.code === 200) {
-                    const service = responseService
-                    return { ...state, errorEventResponse: false, service }
+                    const AddOrUpdateEvent = responseService
+                    return { ...state, errorEventResponse: false, AddOrUpdateEvent }
+                }
+                else {
+                    return { ...state, errorEventResponse: true }
+                }
+            }
+        case RESPONSE_UPDATE_STATUS_EVENT:
+            {
+                const responseService = action.payload.response;
+                if (responseService.code === 200) {
+                    const UpdateEventStatus = responseService
+                    return { ...state, errorEventResponse: false, UpdateEventStatus }
                 }
                 else {
                     return { ...state, errorEventResponse: true }

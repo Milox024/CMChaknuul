@@ -1,36 +1,60 @@
 import Box from '@mui/material/Box';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'universal-cookie';
+
 const BaseContainer = (props) => {
     
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const cookies = new Cookies();
 
     const [usuarioLogged, setUsuarioLogged] = useState({});
   
     const appReducers = {};
     appReducers.home = useSelector((state) => state.home);
 
+    const [ventana, setVentana] = useState("main")
+
     useEffect(() => {
-      let login = appReducers.home;
-      if(login?.usuario)
+      var cooki = cookies.get("ChaknuulCmUserCookiesVigency");
+      if(cooki != null && cooki != "")
         {
-          if(login?.usuario.usuario?.ok === true){
-            setUsuarioLogged(login?.usuario.usuario?.result)
+          console.log("Session Activa hasta ->", cooki)
+          var date = new Date(cooki);
+          if(date < (new Date()))
+          {
+            cookies.remove('ChaknuulCmUserCookiesUser');
+            cookies.remove('ChaknuulCmUserCookiesReference');
+            cookies.remove('ChaknuulCmUserCookiesVigency');
+            navigate("/login");
           }
         }
-      else
+        else
         {
-          navigate("/login");
+          let login = appReducers.home;
+          if(login?.usuario)
+            {
+              if(login?.usuario.usuario?.ok === true){
+                setUsuarioLogged(login?.usuario.usuario?.result)
+              }
+            }
+          else
+            {
+              navigate("/login");
+            }
         }
+
+
+      
     },[])
 
   return (
     <div>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
-          <a className="navbar-brand" href="#">Chaknuul</a>
+          <a className="navbar-brand" onClick={() => setVentana("main")} href="#">Chaknuul</a>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
           </button>
@@ -49,11 +73,10 @@ const BaseContainer = (props) => {
           </div>
         </div>
       </nav>
-      <br></br>
       <div className='divBase'>
         <h4>Centro de administracion de contenido Chaknúul</h4>
         <hr></hr>
-        {props.children}
+        {React.cloneElement(props.children, { ventana, setVentana })}
       </div>
     </div>
   );

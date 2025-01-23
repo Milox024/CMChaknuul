@@ -6,7 +6,9 @@ import {
     RESPONSE_USER_LOGIN,
     REQUEST_USER_LOGIN,
     RESPONSE_SAVE_OR_UPDATE_EVENT,
-    REQUEST_SAVE_OR_UPDATE_EVENT
+    REQUEST_SAVE_OR_UPDATE_EVENT,
+    RESPONSE_UPDATE_STATUS_EVENT,
+    REQUEST_UPDATE_STATUS_EVENT
 
 } from '../../Constants'
 import HomeModule from '../../../../Libraries/Home'
@@ -23,7 +25,7 @@ function* requestUserLogin(data){
 }
 function* requestHomeModuleInfo(data){
     try {
-        const response = yield call(HomeModule.GetHomeModule, data.payload.guid);
+        const response = yield call(HomeModule.GetHomeModule, data.payload.request);
         yield put({type: RESPONSE_HOME_MODULE_INFO, payload: { response:response }});
 
     } catch (error) {
@@ -33,8 +35,18 @@ function* requestHomeModuleInfo(data){
 }
 function* requestSaveOrUpdateEvent(data){
     try {
-        const response = yield call(HomeModule.RequestSaveOrUpdateEvent, data.payload.event);
+        const response = yield call(HomeModule.RequestSaveOrUpdateEvent, data.payload.request);
         yield put({type: RESPONSE_SAVE_OR_UPDATE_EVENT, payload: { response:response }});
+
+    } catch (error) {
+        console.error("load home module error", error);
+        yield put({ type: DATA_FETCH_FAILED, message: error.statusText })
+    }
+}
+function* requestUpdateStatusEvent(data){
+    try {
+        const response = yield call(HomeModule.RequestUpdateStatusEvent, data.payload.request);
+        yield put({type: RESPONSE_UPDATE_STATUS_EVENT, payload: { response:response }});
 
     } catch (error) {
         console.error("load home module error", error);
@@ -50,4 +62,7 @@ export function* watchRequestHomeModuleInfo() {
 }
 export function* watchRequestSaveOrUpdateEvent() {
     yield takeLatest(REQUEST_SAVE_OR_UPDATE_EVENT, requestSaveOrUpdateEvent);
+}
+export function* watchRequestUpdateStatusEvent() {
+    yield takeLatest(REQUEST_UPDATE_STATUS_EVENT, requestUpdateStatusEvent);
 }

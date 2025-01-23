@@ -6,45 +6,52 @@ import {
 } from "../../ReduxSaga/Actions/Home";
 import EventsTableContainer from "./Components/EventsTableContainer";
 import { useNavigate } from "react-router-dom";
-import EventosContainer from "./Components/EventosContainer";
-import NewContainer from "./Components/EventosContainer";
+import NewContainer from "./Components/NewContainer";
+import EditContainer from "./Components/EditContainer";
+import Cookies from "universal-cookie";
 
-const HomeContainer = () => {
+const HomeContainer = ({ventana, setVentana}) => {
   
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const cookies = new Cookies();
 
   const appReducers = {};
   appReducers.home = useSelector((state) => state.home);
 
   const [usuarioLogged, setUsuarioLogged] = useState({});
-  const [ventana, setVentana] = useState("main")
   const [eventoSeleccionado, setEventoSeleccionado] = useState({})
+  const [eventoEditar, setEventoEditar] = useState({})
   const [request, setRequest] = useState({
     referencia: "",
     data: 0
   });
-  const [guid, setGuid] = useState("");
-
-  useEffect(() => {
-    if(appReducers?.home?.usuario?.usuario?.result?.guidActivo != ""){
-      setGuid(appReducers?.home?.usuario?.usuario?.result?.guidActivo);
-    }
-  },[appReducers?.home?.usuario?.usuario?.result?.guidActivo])
+  const [guid, setGuid] = useState(cookies.get("ChaknuulCmUserCookiesReference"));
 
   return (
     <div>
     {
       ventana == "main" &&
       <EventsTableContainer
+      guid={guid}
       setVentana={setVentana}
+      setEventoEditar={setEventoEditar}
       ></EventsTableContainer>
     }
     {
       ventana == "nuevo" &&
       <NewContainer
       guid={guid}
+      setVentana={setVentana}
       ></NewContainer>
+    }
+    {
+      ventana == "editar" &&
+      <EditContainer
+      guid={guid}
+      setVentana={setVentana}
+      eventoEditar={eventoEditar}
+      ></EditContainer>
     }
       <div></div>
     </div>

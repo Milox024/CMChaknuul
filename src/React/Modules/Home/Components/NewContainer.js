@@ -60,9 +60,11 @@ const NewContainer = ({ guid, setVentana }) => {
     useEffect(() => {
         if(eventoValido === 1)
             {
+                console.log("Evento valido = 1");
                 if((Date.parse(evento.Fecha)) < (Date.now()))
                     {
                         setMsgValidation("La fecha no puede ser menor a la actual");
+                        setEventoValido(0);
                         return;
                     }
                 else
@@ -191,9 +193,9 @@ const NewContainer = ({ guid, setVentana }) => {
                             <label>Tipo</label>
                             <select onChange={(e) => setEvento({...evento, Tipo: e.target.value})} className="form-control">
                                 <option value={0}>Seleccione</option>
-                                <option value={1}>Clase</option>
+                                <option value={1}>Eventos</option>
                                 <option value={2}>Viaje</option>
-                                <option value={3}>Eventos</option>
+                                <option value={3}>Clase</option>
                             </select>
                         </div>
                     </div>
@@ -273,11 +275,11 @@ const NewContainer = ({ guid, setVentana }) => {
                 </div>
                 <div className="form-group">
                     <label>Comentarios</label>
-                    <textarea onChange={(e) => setEvento({...evento, Comentarios: e.target.value})} className="form-control" rows="3" placeholder="En caso que sean mas de un elemento, separar por un asterisco (*), si se guarda vacio no se mostrara este campo"></textarea>
+                    <textarea onChange={(e) => setEvento({...evento, Comentarios: e.target.value})} className="form-control" rows="3" placeholder="Comentarios"></textarea>
                 </div>
                 <div className="form-group">
                     <label>Llamada a la accion</label>
-                    <textarea onChange={(e) => setEvento({...evento, Llamada: e.target.value})} className="form-control" rows="3" placeholder="En caso que sean mas de un elemento, separar por un asterisco (*), si se guarda vacio no se mostrara este campo"></textarea>
+                    <textarea onChange={(e) => setEvento({...evento, Llamada: e.target.value})} className="form-control" rows="3" placeholder="Llamado a la accion"></textarea>
                 </div>
                 <br></br>    
                 {

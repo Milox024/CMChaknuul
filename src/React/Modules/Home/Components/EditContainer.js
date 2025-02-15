@@ -204,9 +204,9 @@ const EditContainer = ({ guid, setVentana, eventoEditar }) => {
                             <label>Tipo</label>
                             <select onChange={(e) => setEvento({...evento, tipo: e.target.value})} className="form-control">
                                 <option value={0}>Seleccione</option>
-                                <option selected={evento.tipo == 1} value={1}>Clase</option>
+                                <option selected={evento.tipo == 1} value={1}>Eventos</option>
                                 <option selected={evento.tipo == 2} value={2}>Viaje</option>
-                                <option selected={evento.tipo == 3} value={3}>Eventos</option>
+                                <option selected={evento.tipo == 3} value={3}>Clases</option>
                             </select>
                         </div>
                     </div>

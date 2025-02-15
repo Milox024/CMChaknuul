@@ -78,7 +78,7 @@ const EventsTableContainer = ({setVentana,setEventoEditar,guid}) => {
         preConfirm: async (fecha) => {
           try 
             {
-                const githubUrl = `http://chaknuul-001-site1.anytempurl.com/api/Cm/CloneEvent?referencia=${guid}&fecha=${fecha}&eid=${evento.id}`;
+                const githubUrl = `https://services.chaknuul.com/api/Cm/CloneEvent?referencia=${guid}&fecha=${fecha}&eid=${evento.id}`;
                 const response = await fetch(githubUrl);
                 if (!response.ok) {
                 return Swal.showValidationMessage(`
@@ -116,7 +116,7 @@ const EventsTableContainer = ({setVentana,setEventoEditar,guid}) => {
         preConfirm: async (fecha) => {
           try 
             {
-                const githubUrl = `http://chaknuul-001-site1.anytempurl.com/api/Cm/UpdateEventStatus?referencia=${guid}&id=${evento.id}`;
+                const githubUrl = `https://services.chaknuul.com/api/Cm/UpdateEventStatus?referencia=${guid}&id=${evento.id}`;
                 const response = await fetch(githubUrl);
                 if (!response.ok) {
                 return Swal.showValidationMessage(`

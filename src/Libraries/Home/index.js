@@ -1,5 +1,5 @@
 
-const URLServices = "http://chaknuul-001-site1.anytempurl.com/api/";
+const URLServices = "https://services.chaknuul.com/api/";
 //const URLServices = "https://localhost:44305/api/";
 
 
